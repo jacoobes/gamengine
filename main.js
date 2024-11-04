@@ -14,6 +14,7 @@ for (const layer of layers) {
     app.stage.addChild(layer)
 }
 
+const keys = {}
 class MyApplication {
 
     config = {
@@ -22,17 +23,34 @@ class MyApplication {
         },
         autoResize : true
     };
+    speed = 2;
+    sprite;
+    async init() {
+        const asset = await Assets.load('girlfriend.png' )
+        const sprite = Sprite.from(asset)
+        this.sprite = sprite;
+    }
 
     async render(layers) {
         const top = layers.at(-1)
-        const asset = await Assets.load('girlfriend.png' )
-        const sprite = Sprite.from(asset)
-        sprite.x = app.screen.width / 2
-        sprite.y = app.screen.height / 2
-        top.addChild(sprite)
+        this.sprite.x = app.screen.width / 2
+        this.sprite.y = app.screen.height / 2
+        top.addChild(this.sprite)
     }
 
     tick(time) {
+        if (keys['ArrowUp'] || keys['KeyW']) {
+            this.sprite.y -= this.speed
+        }
+        if (keys['ArrowDown'] || keys['KeyS']) {
+            this.sprite.y += this.speed
+        }
+        if (keys['ArrowLeft'] || keys['KeyA']) {
+            this.sprite.x -= this.speed;
+        }
+        if (keys['ArrowRight'] || keys['KeyD']) {
+            this.sprite.x += this.speed;
+        }
 
     }
 
@@ -40,12 +58,20 @@ class MyApplication {
 
 
 const game = new MyApplication();
+await game.init()
 game.render(layers)
+
+addEventListener('keydown', (e) => {
+    keys[e.code] = true;
+});
+addEventListener('keyup', e => {
+    keys[e.code] = false;
+})
+
 app.ticker.add((time) => {
     game.tick(time)
 });
 
-if(game.config.autoResize) {
 function cleanup(layer) {
     for (let i = layer.children.length - 1; i >= 0; i--) {
         const child = layer.children[i];
@@ -63,11 +89,13 @@ function cleanup(layer) {
         child.destroy({ children: true, });
     }
 }
-addEventListener('resize', () => {
-    app.resize()
-    cleanup(app.stage)
-    game.render(layers)
-})
+if(game.config.autoResize) {
+
+//addEventListener('resize', () => {
+//    app.resize()
+//    cleanup(app.stage)
+//    game.render(layers)
+//})
 
 }
 
