@@ -1,0 +1,8 @@
+I want to make a 2d game engine with pixi js backing it.
+A few simple abstractions to make graphics really easy.
+Layer management
+interop with html components
+
+game mechanics - sprite sheet handling, sound, collision
+
+KISS
