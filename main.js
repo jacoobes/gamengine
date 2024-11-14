@@ -1,18 +1,6 @@
 import { Application, Assets, Container, Sprite } from 'pixi.js'
 
 
-const app = new Application()
-await app.init({ background: '#1099bb', resizeTo: window });
-
-document.body.appendChild(app.canvas);
-
-const layers = [
-    new Container() // base
-]
-
-for (const layer of layers) {
-    app.stage.addChild(layer)
-}
 
 const keys = {}
 class MyApplication {
@@ -26,8 +14,9 @@ class MyApplication {
     speed = 2;
     sprite;
     async init() {
-        const asset = await Assets.load('girlfriend.png' )
-        const sprite = Sprite.from(asset)
+        
+        Assets.add({ alias: 'gf', src: 'girlfriend.png'});
+        const sprite = Sprite.from(await Assets.load('gf'))
         this.sprite = sprite;
     }
 
@@ -55,11 +44,25 @@ class MyApplication {
     }
 
 }
+const splashScreen = document.getElementById('splash-screen');
 
+const app = new Application();
+await app.init({ background: '#ffffff', resizeTo: window, antialias: true, });
+
+
+const layers = [
+    new Container() // base
+]
+
+for (const layer of layers) {
+    app.stage.addChild(layer)
+}
 
 const game = new MyApplication();
 await game.init()
 game.render(layers)
+splashScreen.remove();
+document.body.appendChild(app.canvas)
 
 addEventListener('keydown', (e) => {
     keys[e.code] = true;
@@ -89,6 +92,7 @@ function cleanup(layer) {
         child.destroy({ children: true, });
     }
 }
+
 if(game.config.autoResize) {
 
 //addEventListener('resize', () => {
